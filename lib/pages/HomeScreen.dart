@@ -3,6 +3,7 @@ import 'package:my_spotify/pages/MusicPlayerScreen.dart';
 import 'package:my_spotify/pages/PlayListScreen.dart';
 import 'package:my_spotify/utils/GradientScaffold%20.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:my_spotify/viewmodels/PlaylistViewModel.dart';
 import 'package:my_spotify/viewmodels/SongViewModel.dart';
 import 'package:provider/provider.dart';
 
@@ -17,39 +18,30 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+
     Future.microtask(() {
+      // Load Tracks
       Provider.of<SongViewModel>(
         context,
         listen: false,
       ).loadSongsByIds(['3NxJKoYi9WMBuZdk4UdJuK', '7qCAVkHWZkF44OzOUKf8Cr']);
+
+      // Load Playlist
+      Provider.of<Playlistviewmodel>(
+        context,
+        listen: false,
+      ).loadMultiplePlaylists([
+        '6QldmPHZUUPmcTy07FsyPI',
+        '7eYBwlYMkT2VLwzMvFz3Gj',
+        '68JXTKfqFZEWO1DQRdVndh',
+        '2JtMCwq7aSoxf4EACEqZL9',
+        '1a7oOOBs9p9ib50SHd6nWf',
+      ]);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> playlists = [
-      {
-        'title': 'Chill Vibes',
-        'songs': ['Ocean Breeze', 'Midnight Thoughts', 'Lo-fi Break'],
-      },
-      {
-        'title': 'Workout Boost',
-        'songs': ['Beast Mode', 'Run Hard', 'No Pain'],
-      },
-      {
-        'title': 'Romantic Hits',
-        'songs': ['Falling Slowly', 'Sweet Moments', 'Forever Mine'],
-      },
-      {
-        'title': 'Jazz Café',
-        'songs': ['Evening Blues', 'Smooth Sax', 'Coffee Jazz'],
-      },
-      {
-        'title': 'Focus Now',
-        'songs': ['Deep Work', 'Study Mode', 'Brainwave'],
-      },
-    ];
-
     return GradientScaffold(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -125,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 32),
 
-            // Recommendations
+            // Playlist Recommendations
             Text(
               "Recommended for you",
               style: GoogleFonts.poppins(
@@ -137,51 +129,74 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 16),
             SizedBox(
               height: 180,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: 5,
-                separatorBuilder: (_, __) => const SizedBox(width: 16),
-                itemBuilder: (context, index) {
-                  final playlist = playlists[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (_) => PlayListScreen(
-                                playlistTitle: playlist['title']!,
-                                songs: List<String>.from(playlist['songs']!),
-                                artistImage: "assets/album.jpg",
-                                artistName: "Nirvana",
+              child: Consumer<Playlistviewmodel>(
+                builder: (context, playlistVM, _) {
+                  if (playlistVM.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (playlistVM.playlists.isEmpty) {
+                    return const Text(
+                      'No tracks found',
+                      style: TextStyle(color: Colors.white),
+                    );
+                  }
+
+                  return ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: playlistVM.playlists.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 16),
+                    itemBuilder: (context, index) {
+                      final playlist = playlistVM.playlists[index];
+
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (_) => PlayListScreen(
+                                    playlistTitle: playlist.name,
+                                    tracks:
+                                        playlist.tracks.items
+                                            .map((item) => item.track)
+                                            .toList(),
+
+                                    artistImage:
+                                        playlist.images.isNotEmpty
+                                            ? playlist.images.first.url
+                                            : '',
+                                    playlistOwner: playlist.owner.displayName,
+                                  ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 140,
+                          decoration: BoxDecoration(
+                            color: Colors.white12,
+                            borderRadius: BorderRadius.circular(16),
+                            image: DecorationImage(
+                              image: NetworkImage(playlist.images.first.url),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          child: Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Text(
+                                playlist.name,
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      width: 140,
-                      decoration: BoxDecoration(
-                        color: Colors.white12,
-                        borderRadius: BorderRadius.circular(16),
-                        image: const DecorationImage(
-                          image: AssetImage('assets/album.jpg'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      child: Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Text(
-                            playlist['title']!,
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   );
                 },
               ),

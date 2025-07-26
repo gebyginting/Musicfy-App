@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_spotify/pages/HomeScreen.dart';
+import 'package:my_spotify/repositories/PlaylistRepository.dart';
 import 'package:my_spotify/repositories/SongRepository.dart';
+import 'package:my_spotify/viewmodels/PlaylistViewModel.dart';
 import 'package:my_spotify/viewmodels/SongViewModel.dart';
 import 'package:provider/provider.dart';
 
@@ -9,8 +11,15 @@ void main() {
     MultiProvider(
       providers: [
         Provider(create: (_) => Songrepository()),
+        Provider(create: (_) => Playlistrepository()),
+
         ChangeNotifierProvider(
           create: (context) => SongViewModel(context.read<Songrepository>()),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (context) =>
+                  Playlistviewmodel(context.read<Playlistrepository>()),
         ),
       ],
       child: MyApp(),

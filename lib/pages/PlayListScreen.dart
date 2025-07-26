@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:my_spotify/models/PlaylistModel.dart';
 import 'package:my_spotify/utils/GradientScaffold%20.dart';
 
 class PlayListScreen extends StatefulWidget {
   final String playlistTitle;
-  final List<String> songs;
+  final String playlistOwner;
+  final List<Track> tracks;
   final String artistImage;
-  final String artistName;
 
   const PlayListScreen({
     super.key,
     required this.playlistTitle,
-    required this.songs,
+    required this.playlistOwner,
+    required this.tracks,
     required this.artistImage,
-    required this.artistName,
   });
 
   @override
@@ -83,7 +84,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.artistName,
+                      widget.playlistTitle,
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontSize: 28,
@@ -91,7 +92,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
                       ),
                     ),
                     Text(
-                      widget.playlistTitle,
+                      widget.playlistOwner,
                       style: GoogleFonts.poppins(
                         color: Colors.white70,
                         fontSize: 16,
@@ -128,11 +129,15 @@ class _PlayListScreenState extends State<PlayListScreen> {
           Expanded(
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              itemCount: widget.songs.length,
+              itemCount: widget.tracks.length,
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
-                final song = widget.songs[index];
+                final track = widget.tracks[index];
                 final isPlaying = index == currentlyPlayingIndex;
+                final artistNames =
+                    track.artists.isNotEmpty
+                        ? track.artists.map((a) => a.name).join(', ')
+                        : 'Unknown Artist';
                 return Container(
                   decoration: BoxDecoration(
                     color:
@@ -147,7 +152,9 @@ class _PlayListScreenState extends State<PlayListScreen> {
                       style: GoogleFonts.poppins(color: Colors.white54),
                     ),
                     title: Text(
-                      song,
+                      track.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontWeight:
@@ -155,7 +162,9 @@ class _PlayListScreenState extends State<PlayListScreen> {
                       ),
                     ),
                     subtitle: Text(
-                      widget.artistName,
+                      track.artists.isNotEmpty
+                          ? track.artists.map((a) => a.name).join(', ')
+                          : "Unknown Artist",
                       style: GoogleFonts.poppins(
                         color: Colors.white38,
                         fontSize: 12,

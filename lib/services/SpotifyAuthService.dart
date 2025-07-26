@@ -41,6 +41,7 @@ class Spotifyauthservice {
 
     if (token != null && expiryString != null) {
       final expiry = DateTime.parse(expiryString);
+      print("TOKEN: $token");
       if (DateTime.now().isBefore(expiry)) return token;
     }
 
