@@ -16,13 +16,23 @@ class TrackModel {
   });
 
   factory TrackModel.fromJson(Map<String, dynamic> json) {
+    final artistsJson = json['artists'] as List?;
+    final artistNames =
+        artistsJson != null
+            ? artistsJson.map((a) => a['name'] ?? 'Unknown').join(', ')
+            : 'Unknown Artist';
+
+    final albumImages = (json['album']?['images'] as List?) ?? [];
+    final albumImageUrl =
+        albumImages.isNotEmpty ? albumImages[0]['url'] ?? '' : '';
+
     return TrackModel(
-      id: json['id'],
-      name: json['name'],
-      artist: (json['artists'] as List).map((a) => a['name']).join(', '),
-      albumImage: json['album']['images'][0]['url'], // ambil resolusi terbesar
-      albumName: json['album']['name'],
-      durationMs: json['duration_ms'],
+      id: json['id'] ?? '',
+      name: json['name'] ?? 'Unknown',
+      artist: artistNames,
+      albumImage: albumImageUrl,
+      albumName: json['album']?['name'] ?? 'Unknown Album',
+      durationMs: json['duration_ms'] ?? 0,
     );
   }
 }

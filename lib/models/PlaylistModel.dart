@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_spotify/models/TrackModel.dart';
 
 class PlaylistModel {
   final String id;
@@ -92,7 +93,7 @@ class Tracks {
 class PlaylistItem {
   final String addedAt;
   final AddedBy addedBy;
-  final Track track;
+  final TrackModel track;
 
   PlaylistItem({
     required this.addedAt,
@@ -104,7 +105,7 @@ class PlaylistItem {
     return PlaylistItem(
       addedAt: json['added_at'] ?? '',
       addedBy: AddedBy.fromJson(json['added_by'] ?? {}),
-      track: Track.fromJson(json['track'] ?? {}),
+      track: TrackModel.fromJson(json['track'] ?? {}),
     );
   }
 }
@@ -119,67 +120,67 @@ class AddedBy {
   }
 }
 
-class Track {
-  final String id;
-  final String name;
-  final String href;
-  final Album album;
-  final List<Artist> artists;
-  final int durationMs;
-  final String? previewUrl;
+// class Track {
+//   final String id;
+//   final String name;
+//   final String href;
+//   final Album album;
+//   final List<Artist> artists;
+//   final int durationMs;
+//   final String? previewUrl;
 
-  Track({
-    required this.id,
-    required this.name,
-    required this.href,
-    required this.album,
-    required this.artists,
-    required this.durationMs,
-    this.previewUrl,
-  });
+//   Track({
+//     required this.id,
+//     required this.name,
+//     required this.href,
+//     required this.album,
+//     required this.artists,
+//     required this.durationMs,
+//     this.previewUrl,
+//   });
 
-  factory Track.fromJson(Map<String, dynamic> json) {
-    return Track(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      href: json['href'] ?? '',
-      previewUrl: json['preview_url'], // nullable
-      durationMs: json['duration_ms'] ?? 0,
-      album: Album.fromJson(json['album'] ?? {}),
-      artists:
-          (json['artists'] as List? ?? [])
-              .map((a) => Artist.fromJson(a))
-              .toList(),
-    );
-  }
-}
+//   factory Track.fromJson(Map<String, dynamic> json) {
+//     return Track(
+//       id: json['id'] ?? '',
+//       name: json['name'] ?? '',
+//       href: json['href'] ?? '',
+//       previewUrl: json['preview_url'], // nullable
+//       durationMs: json['duration_ms'] ?? 0,
+//       album: Album.fromJson(json['album'] ?? {}),
+//       artists:
+//           (json['artists'] as List? ?? [])
+//               .map((a) => Artist.fromJson(a))
+//               .toList(),
+//     );
+//   }
+// }
 
-class Album {
-  final String name;
-  final String href;
-  final List<ImageModel> images;
+// class Album {
+//   final String name;
+//   final String href;
+//   final List<ImageModel> images;
 
-  Album({required this.name, required this.href, required this.images});
+//   Album({required this.name, required this.href, required this.images});
 
-  factory Album.fromJson(Map<String, dynamic> json) {
-    return Album(
-      name: json['name'] ?? '',
-      href: json['href'] ?? '',
-      images:
-          (json['images'] as List? ?? [])
-              .map((img) => ImageModel.fromJson(img))
-              .toList(),
-    );
-  }
-}
+//   factory Album.fromJson(Map<String, dynamic> json) {
+//     return Album(
+//       name: json['name'] ?? '',
+//       href: json['href'] ?? '',
+//       images:
+//           (json['images'] as List? ?? [])
+//               .map((img) => ImageModel.fromJson(img))
+//               .toList(),
+//     );
+//   }
+// }
 
-class Artist {
-  final String id;
-  final String name;
+// class Artist {
+//   final String id;
+//   final String name;
 
-  Artist({required this.id, required this.name});
+//   Artist({required this.id, required this.name});
 
-  factory Artist.fromJson(Map<String, dynamic> json) {
-    return Artist(id: json['id'] ?? '', name: json['name'] ?? '');
-  }
-}
+//   factory Artist.fromJson(Map<String, dynamic> json) {
+//     return Artist(id: json['id'] ?? '', name: json['name'] ?? '');
+//   }
+// }

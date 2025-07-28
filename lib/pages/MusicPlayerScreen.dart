@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:my_spotify/models/Song.dart';
 import 'package:my_spotify/models/TrackModel.dart';
 import 'package:my_spotify/utils/GradientScaffold%20.dart';
 
 class MusicPlayerScreen extends StatelessWidget {
   final TrackModel song;
+
   const MusicPlayerScreen({super.key, required this.song});
 
   @override
@@ -27,19 +27,25 @@ class MusicPlayerScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
             const SizedBox(height: 16),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: Image.asset(
-                song.albumImage,
-                width: double.infinity,
-                height: 320,
-                fit: BoxFit.cover,
+            AspectRatio(
+              aspectRatio: 1,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(28),
+                child:
+                    song.albumImage != null && song.albumImage.isNotEmpty
+                        ? Image.network(
+                          song.albumImage,
+                          fit: BoxFit.cover,
+                          errorBuilder:
+                              (context, error, stackTrace) =>
+                                  const Icon(Icons.broken_image),
+                        )
+                        : const Icon(Icons.broken_image, size: 100),
               ),
             ),
             const SizedBox(height: 24),
@@ -53,6 +59,8 @@ class MusicPlayerScreen extends StatelessWidget {
                 color: Colors.white,
               ),
               textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             Text(
               song.artist,
@@ -91,8 +99,7 @@ class MusicPlayerScreen extends StatelessWidget {
               ],
             ),
 
-            const Spacer(),
-
+            const SizedBox(height: 24),
             // Player Controls
             const PlayerControls(),
             const SizedBox(height: 32),

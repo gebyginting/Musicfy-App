@@ -11,11 +11,7 @@ class Apiservice {
 
     return _dio.get(
       'https://api.spotify.com/v1/tracks',
-      queryParameters: {
-        'ids': ids.join(','), // ubah list ke string dipisah koma
-        // 'ids': '7qCAVkHWZkF44OzOUKf8Cr,3NxJKoYi9WMBuZdk4UdJuK',
-        'market': 'ES',
-      },
+      queryParameters: {'ids': ids.join(','), 'market': 'ES'},
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
   }
@@ -29,7 +25,7 @@ class Apiservice {
         'https://api.spotify.com/v1/playlists/$playlistId',
         queryParameters: {
           'fields':
-              'name,owner(display_name),images,tracks.items(added_by.id,track(name,href,album(name,href),artists))',
+              'name,owner(display_name),images,tracks.items(added_by.id,track(name,href,album(name,href,images),artists))',
         },
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );

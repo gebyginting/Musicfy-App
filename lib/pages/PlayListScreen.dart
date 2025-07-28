@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:my_spotify/models/PlaylistModel.dart';
+import 'package:my_spotify/models/TrackModel.dart';
+import 'package:my_spotify/pages/MusicPlayerScreen.dart';
 import 'package:my_spotify/utils/GradientScaffold%20.dart';
 
 class PlayListScreen extends StatefulWidget {
   final String playlistTitle;
   final String playlistOwner;
-  final List<Track> tracks;
+  final List<TrackModel> tracks;
   final String artistImage;
 
   const PlayListScreen({
@@ -134,10 +135,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
               itemBuilder: (context, index) {
                 final track = widget.tracks[index];
                 final isPlaying = index == currentlyPlayingIndex;
-                final artistNames =
-                    track.artists.isNotEmpty
-                        ? track.artists.map((a) => a.name).join(', ')
-                        : 'Unknown Artist';
+
                 return Container(
                   decoration: BoxDecoration(
                     color:
@@ -162,22 +160,30 @@ class _PlayListScreenState extends State<PlayListScreen> {
                       ),
                     ),
                     subtitle: Text(
-                      track.artists.isNotEmpty
-                          ? track.artists.map((a) => a.name).join(', ')
-                          : "Unknown Artist",
+                      track.artist.isNotEmpty ? track.artist : "Unknown Artist",
                       style: GoogleFonts.poppins(
                         color: Colors.white38,
                         fontSize: 12,
                       ),
                     ),
-                    trailing: Icon(
-                      isPlaying ? Icons.pause_circle : Icons.play_arrow,
-                      color: Colors.white,
+                    trailing: IconButton(
+                      icon: Icon(
+                        isPlaying ? Icons.pause_circle : Icons.play_arrow,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          currentlyPlayingIndex = index;
+                        });
+                      },
                     ),
                     onTap: () {
-                      setState(() {
-                        currentlyPlayingIndex = index;
-                      });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => MusicPlayerScreen(song: track),
+                        ),
+                      );
                     },
                   ),
                 );

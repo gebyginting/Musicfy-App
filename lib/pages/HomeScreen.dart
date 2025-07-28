@@ -15,9 +15,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
+
+    _searchController.addListener(() {
+      setState(() {});
+    });
 
     Future.microtask(() {
       // Load Tracks
@@ -70,25 +77,46 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // Search Bar
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(
                 color: Colors.white12,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Row(
-                children: const [
-                  Icon(Icons.search, color: Colors.white70),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      "Search your vibe...",
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                  ),
-                ],
+              child: TextField(
+                controller: _searchController,
+                style: const TextStyle(color: Colors.white),
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value.toLowerCase();
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: "Search your vibe...",
+                  hintStyle: const TextStyle(color: Colors.white70),
+                  border: InputBorder.none,
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                  prefixIcon: const Icon(Icons.search, color: Colors.white70),
+                  suffixIcon:
+                      _searchController.text.isNotEmpty
+                          ? IconButton(
+                            icon: const Icon(Icons.clear, color: Colors.white),
+                            onPressed: () {
+                              _searchController.clear();
+                              FocusScope.of(
+                                context,
+                              ).unfocus(); // Tutup keyboard
+
+                              setState(() {
+                                _searchQuery = "";
+                              });
+                            },
+                          )
+                          : null,
+                ),
               ),
             ),
-
             const SizedBox(height: 32),
 
             // Categories
@@ -220,9 +248,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
+                final filteredSongs =
+                    trackVM.songs
+                        .where(
+                          (track) =>
+                              track.name.toLowerCase().contains(_searchQuery) ||
+                              track.artist.toLowerCase().contains(_searchQuery),
+                        )
+                        .toList();
+
+                if (filteredSongs.isEmpty) {
+                  return const Text(
+                    "No songs found",
+                    style: TextStyle(color: Colors.white70),
+                  );
+                }
+
                 return Column(
                   children:
-                      trackVM.songs.map((track) {
+                      filteredSongs.map((track) {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 16),
                           child: ListTile(
@@ -285,5 +329,11 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: Text(name, style: GoogleFonts.poppins(color: Colors.white)),
     );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 }
