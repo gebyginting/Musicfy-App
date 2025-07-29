@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:my_spotify/viewmodels/PlaylistViewModel.dart';
 import 'package:my_spotify/viewmodels/SongViewModel.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,10 +29,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
     Future.microtask(() {
       // Load Tracks
-      Provider.of<SongViewModel>(
-        context,
-        listen: false,
-      ).loadSongsByIds(['3NxJKoYi9WMBuZdk4UdJuK', '7qCAVkHWZkF44OzOUKf8Cr']);
+      Provider.of<SongViewModel>(context, listen: false).loadSongsByIds([
+        '3NxJKoYi9WMBuZdk4UdJuK',
+        '7qCAVkHWZkF44OzOUKf8Cr',
+        '1ZLrDPgR7mvuTco3rQK8Pk',
+        '7j4Mlml9lBzbswaP6ahtYy',
+        '3QaPy1KgI7nu9FJEQUgn6h',
+        '6dOtVTDdiauQNBQEDOtlAB',
+        '2NttzQ2kuVFFmEa8q4rsbu',
+        '2dhhLFPhKgHI6uSBmTuNUJ',
+        '1juHIWqgFiDFAKuEBP24Lt',
+      ]);
 
       // Load Playlist
       Provider.of<Playlistviewmodel>(
@@ -43,6 +51,10 @@ class _HomeScreenState extends State<HomeScreen> {
         '68JXTKfqFZEWO1DQRdVndh',
         '2JtMCwq7aSoxf4EACEqZL9',
         '1a7oOOBs9p9ib50SHd6nWf',
+        '12XmTwbx8e6c47QfecTIlf',
+        '7HYUSfgjzjzA5IKqhUbOfR',
+        '4AolIdPhPRofTBK5neaq63',
+        '1aJXh7Y3vzdyMcbUaLoF89',
       ]);
     });
   }
@@ -160,7 +172,23 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Consumer<Playlistviewmodel>(
                 builder: (context, playlistVM, _) {
                   if (playlistVM.isLoading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return ListView.separated(
+                      itemBuilder: (context, index) {
+                        return Shimmer.fromColors(
+                          child: Container(
+                            width: 140,
+                            decoration: BoxDecoration(
+                              color: Colors.white12,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          baseColor: Colors.grey.shade700,
+                          highlightColor: Colors.grey.shade400,
+                        );
+                      },
+                      separatorBuilder: (_, _) => const SizedBox(width: 16),
+                      itemCount: 4,
+                    );
                   }
 
                   if (playlistVM.playlists.isEmpty) {
@@ -245,7 +273,24 @@ class _HomeScreenState extends State<HomeScreen> {
             Consumer<SongViewModel>(
               builder: (context, trackVM, child) {
                 if (trackVM.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return Column(
+                    children: List.generate(5, (index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Shimmer.fromColors(
+                          baseColor: Colors.grey.shade700,
+                          highlightColor: Colors.grey.shade400,
+                          child: Container(
+                            height: 64,
+                            decoration: BoxDecoration(
+                              color: Colors.white12,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  );
                 }
 
                 final filteredSongs =

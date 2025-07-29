@@ -136,55 +136,102 @@ class _PlayListScreenState extends State<PlayListScreen> {
                 final track = widget.tracks[index];
                 final isPlaying = index == currentlyPlayingIndex;
 
-                return Container(
-                  decoration: BoxDecoration(
-                    color:
-                        isPlaying
-                            ? const Color(0xFF121350)
-                            : const Color(0xFF1A1A1A),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: ListTile(
-                    leading: Text(
-                      '${index + 1}'.padLeft(2, '0'),
-                      style: GoogleFonts.poppins(color: Colors.white54),
-                    ),
-                    title: Text(
-                      track.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontWeight:
-                            isPlaying ? FontWeight.bold : FontWeight.normal,
+                return InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => MusicPlayerScreen(song: track),
                       ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color:
+                          isPlaying
+                              ? const Color(0xFF121350)
+                              : const Color(0xFF1A1A1A),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    subtitle: Text(
-                      track.artist.isNotEmpty ? track.artist : "Unknown Artist",
-                      style: GoogleFonts.poppins(
-                        color: Colors.white38,
-                        fontSize: 12,
-                      ),
-                    ),
-                    trailing: IconButton(
-                      icon: Icon(
-                        isPlaying ? Icons.pause_circle : Icons.play_arrow,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          currentlyPlayingIndex = index;
-                        });
-                      },
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => MusicPlayerScreen(song: track),
+                    child: Row(
+                      children: [
+                        // Album Art
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            track.albumImage,
+                            width: 56,
+                            height: 56,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      );
-                    },
+                        const SizedBox(width: 12),
+
+                        // Song Info
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                track.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight:
+                                      isPlaying
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                track.artist.isNotEmpty
+                                    ? track.artist
+                                    : "Unknown Artist",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 13,
+                                  color: Colors.white54,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Play button
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              currentlyPlayingIndex = isPlaying ? null : index;
+                            });
+                          },
+                          icon: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            transitionBuilder:
+                                (child, animation) => ScaleTransition(
+                                  scale: animation,
+                                  child: FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  ),
+                                ),
+                            child: Icon(
+                              isPlaying
+                                  ? Icons.pause_circle_filled
+                                  : Icons.play_circle_fill,
+                              color: Colors.white,
+                              size: 32,
+                              key: ValueKey<bool>(
+                                isPlaying,
+                              ), // agar AnimatedSwitcher bisa detek perubahan
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
