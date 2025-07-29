@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:my_spotify/models/TrackModel.dart';
+import 'package:my_spotify/models/track_model.dart';
 import 'package:my_spotify/pages/MusicPlayerScreen.dart';
 import 'package:my_spotify/utils/GradientScaffold%20.dart';
 

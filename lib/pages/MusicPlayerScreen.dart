@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:my_spotify/models/TrackModel.dart';
+import 'package:my_spotify/models/track_model.dart';
 import 'package:my_spotify/utils/GradientScaffold%20.dart';
+import 'package:my_spotify/viewmodels/SongViewModel.dart';
+import 'package:provider/provider.dart';
 
 class MusicPlayerScreen extends StatelessWidget {
   final TrackModel song;
@@ -10,6 +12,9 @@ class MusicPlayerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final songVm = context.watch<SongViewModel>();
+    final favorites = songVm.favorites;
+
     return GradientScaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -74,9 +79,16 @@ class MusicPlayerScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.favorite_border),
-                  color: Colors.white70,
+                  onPressed: () => songVm.toggleFavorite(song),
+                  icon: Icon(
+                    songVm.isFavorite(song.id)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    color:
+                        songVm.isFavorite(song.id)
+                            ? Colors.red
+                            : Colors.white70,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 IconButton(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_spotify/models/TrackModel.dart';
+import 'package:my_spotify/models/track_model.dart';
 import 'package:my_spotify/repositories/SongRepository.dart';
 
 class SongViewModel extends ChangeNotifier {
@@ -31,4 +31,18 @@ class SongViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // Favorites
+  List<TrackModel> get favorites => _repository.getAllFavorites();
+
+  void toggleFavorite(TrackModel track) {
+    if (_repository.isFavorite(track.id)) {
+      _repository.removeFromFavorites(track.id);
+    } else {
+      _repository.addToFavorites(track);
+    }
+    notifyListeners();
+  }
+
+  bool isFavorite(String id) => _repository.isFavorite(id);
 }

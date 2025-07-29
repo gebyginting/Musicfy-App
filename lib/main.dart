@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:my_spotify/models/track_model.dart';
 import 'package:my_spotify/pages/HomeScreen.dart';
 import 'package:my_spotify/repositories/PlaylistRepository.dart';
 import 'package:my_spotify/repositories/SongRepository.dart';
@@ -6,7 +9,18 @@ import 'package:my_spotify/viewmodels/PlaylistViewModel.dart';
 import 'package:my_spotify/viewmodels/SongViewModel.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // inisialisasi Hive
+  await Hive.initFlutter();
+
+  // register adapter
+  Hive.registerAdapter(TrackModelAdapter());
+
+  // buka box
+  await Hive.openBox<TrackModel>('favorites');
+
   runApp(
     MultiProvider(
       providers: [

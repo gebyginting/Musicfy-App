@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_spotify/pages/FavoriteScreen.dart';
 import 'package:my_spotify/pages/MusicPlayerScreen.dart';
 import 'package:my_spotify/pages/PlayListScreen.dart';
 import 'package:my_spotify/utils/GradientScaffold%20.dart';
@@ -79,9 +80,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.white,
                   ),
                 ),
-                const CircleAvatar(
-                  backgroundImage: AssetImage('assets/avatar.jpg'),
-                  radius: 20,
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.favorite, color: Colors.white),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (_) =>
+                                    const FavoriteScreen(), // Ganti dengan halamanmu
+                          ),
+                        );
+                      },
+                    ),
+                    const CircleAvatar(
+                      backgroundImage: AssetImage('assets/avatar.jpg'),
+                      radius: 20,
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -129,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 12),
 
             // Categories
             Text(
@@ -175,6 +193,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     return ListView.separated(
                       itemBuilder: (context, index) {
                         return Shimmer.fromColors(
+                          baseColor: Colors.grey.shade700,
+                          highlightColor: Colors.grey.shade400,
                           child: Container(
                             width: 140,
                             decoration: BoxDecoration(
@@ -182,8 +202,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               borderRadius: BorderRadius.circular(16),
                             ),
                           ),
-                          baseColor: Colors.grey.shade700,
-                          highlightColor: Colors.grey.shade400,
                         );
                       },
                       separatorBuilder: (_, _) => const SizedBox(width: 16),

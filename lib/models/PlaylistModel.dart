@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_spotify/models/TrackModel.dart';
+import 'package:my_spotify/models/track_model.dart';
 
 class PlaylistModel {
   final String id;

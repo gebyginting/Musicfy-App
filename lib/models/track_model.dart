@@ -1,9 +1,24 @@
+import 'package:hive/hive.dart';
+part 'track_model.g.dart'; // Wajib
+
+@HiveType(typeId: 0)
 class TrackModel {
+  @HiveField(0)
   final String id;
+
+  @HiveField(1)
   final String name;
+
+  @HiveField(2)
   final String artist;
+
+  @HiveField(3)
   final String albumImage;
+
+  @HiveField(4)
   final String albumName;
+
+  @HiveField(5)
   final int durationMs;
 
   TrackModel({
