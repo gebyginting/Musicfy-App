@@ -19,7 +19,7 @@ class TrackModelAdapter extends TypeAdapter<TrackModel> {
     return TrackModel(
       id: fields[0] as String,
       name: fields[1] as String,
-      artist: fields[2] as String,
+      artists: fields[2] as List<Artist>,
       albumImage: fields[3] as String,
       albumName: fields[4] as String,
       durationMs: fields[5] as int,
@@ -35,7 +35,7 @@ class TrackModelAdapter extends TypeAdapter<TrackModel> {
       ..writeByte(1)
       ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.artist)
+      ..write(obj.artists)
       ..writeByte(3)
       ..write(obj.albumImage)
       ..writeByte(4)

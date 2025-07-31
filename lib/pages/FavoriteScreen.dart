@@ -92,7 +92,7 @@ class FavoriteScreen extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text(
-                        track.artist ?? 'Unknown',
+                        track.artists.first.name ?? 'Unknown',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.poppins(

@@ -316,7 +316,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         .where(
                           (track) =>
                               track.name.toLowerCase().contains(_searchQuery) ||
-                              track.artist.toLowerCase().contains(_searchQuery),
+                              track.artists.first.name.toLowerCase().contains(
+                                _searchQuery,
+                              ),
                         )
                         .toList();
 
@@ -351,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: GoogleFonts.poppins(color: Colors.white),
                             ),
                             subtitle: Text(
-                              track.artist,
+                              track.artists.first.name,
                               style: GoogleFonts.poppins(
                                 color: Colors.white70,
                                 fontSize: 12,

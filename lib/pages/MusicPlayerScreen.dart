@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_spotify/models/track_model.dart';
+import 'package:my_spotify/pages/ArtistScreen.dart';
 import 'package:my_spotify/utils/GradientScaffold%20.dart';
 import 'package:my_spotify/viewmodels/SongViewModel.dart';
 import 'package:provider/provider.dart';
@@ -67,10 +68,22 @@ class MusicPlayerScreen extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            Text(
-              song.artist,
-              style: GoogleFonts.poppins(fontSize: 16, color: Colors.white70),
-              textAlign: TextAlign.center,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) =>
+                            ArtistScreen(artistId: song.artists.first.id),
+                  ),
+                );
+              },
+              child: Text(
+                song.artists.first.name,
+                style: GoogleFonts.poppins(fontSize: 16, color: Colors.white70),
+                textAlign: TextAlign.center,
+              ),
             ),
             const SizedBox(height: 12),
 

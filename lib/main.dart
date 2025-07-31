@@ -3,8 +3,10 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:my_spotify/models/track_model.dart';
 import 'package:my_spotify/pages/HomeScreen.dart';
+import 'package:my_spotify/repositories/ArtistRepository.dart';
 import 'package:my_spotify/repositories/PlaylistRepository.dart';
 import 'package:my_spotify/repositories/SongRepository.dart';
+import 'package:my_spotify/viewmodels/ArtistViewModel.dart';
 import 'package:my_spotify/viewmodels/PlaylistViewModel.dart';
 import 'package:my_spotify/viewmodels/SongViewModel.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +28,7 @@ void main() async {
       providers: [
         Provider(create: (_) => Songrepository()),
         Provider(create: (_) => Playlistrepository()),
+        Provider(create: (_) => ArtistRepository()),
 
         ChangeNotifierProvider(
           create: (context) => SongViewModel(context.read<Songrepository>()),
@@ -34,6 +37,10 @@ void main() async {
           create:
               (context) =>
                   Playlistviewmodel(context.read<Playlistrepository>()),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (context) => ArtistViewModel(context.read<ArtistRepository>()),
         ),
       ],
       child: MyApp(),

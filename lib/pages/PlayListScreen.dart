@@ -189,8 +189,8 @@ class _PlayListScreenState extends State<PlayListScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                track.artist.isNotEmpty
-                                    ? track.artist
+                                track.artists.first.name.isNotEmpty
+                                    ? track.artists.first.name
                                     : "Unknown Artist",
                                 style: GoogleFonts.poppins(
                                   fontSize: 13,
