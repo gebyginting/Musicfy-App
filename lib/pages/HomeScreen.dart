@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:my_spotify/pages/ArtistScreen.dart';
 import 'package:my_spotify/pages/FavoriteScreen.dart';
 import 'package:my_spotify/pages/MusicPlayerScreen.dart';
 import 'package:my_spotify/pages/PlayListScreen.dart';
 import 'package:my_spotify/utils/GradientScaffold%20.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_spotify/utils/constants.dart';
+import 'package:my_spotify/viewmodels/ArtistViewModel.dart';
 import 'package:my_spotify/viewmodels/PlaylistViewModel.dart';
 import 'package:my_spotify/viewmodels/SongViewModel.dart';
 import 'package:my_spotify/widgets/GenreChip.dart';
@@ -43,10 +45,24 @@ class _HomeScreenState extends State<HomeScreen> {
         '1ZLrDPgR7mvuTco3rQK8Pk',
         '7j4Mlml9lBzbswaP6ahtYy',
         '3QaPy1KgI7nu9FJEQUgn6h',
-        '6dOtVTDdiauQNBQEDOtlAB',
-        '2NttzQ2kuVFFmEa8q4rsbu',
-        '2dhhLFPhKgHI6uSBmTuNUJ',
-        '1juHIWqgFiDFAKuEBP24Lt',
+        // '6dOtVTDdiauQNBQEDOtlAB',
+        // '2NttzQ2kuVFFmEa8q4rsbu',
+        // '2dhhLFPhKgHI6uSBmTuNUJ',
+        // '1juHIWqgFiDFAKuEBP24Lt',
+      ]);
+
+      Provider.of<ArtistViewModel>(
+        context,
+        listen: false,
+      ).loadArtistListInformation([
+        '1Xyo4u8uXC1ZmMpatF05PJ', // The Weeknd
+        '5ZsFI1h6hIdQRw2ti0hz81', // Neyo
+        '3eVa5w3URK5duf6eyVDbu9', // Libianca
+        '6VuMaDnrHyPL1p4EHjYLi7', // Charlie Puth
+        '0du5cEVh5yTK9QJze8zA0C', // Bruno Mars
+        '4nDoRrQiYLoBzwC5BhVJzF', // Camila Cabello
+        '6qqNVTkY8uBg9cP3Jd7DAH', // Billie Eilish
+        '3qNVuliS40BLgXGxhdBdqu', // Mahen
       ]);
 
       // Load Playlist
@@ -163,6 +179,122 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
 
                   const SizedBox(height: 32),
+
+                  Text(
+                    "Popular Artists",
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  SizedBox(
+                    height: 160,
+                    child: Consumer<ArtistViewModel>(
+                      builder: (context, artistVM, _) {
+                        if (artistVM.isLoading) {
+                          return ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: 10,
+                            separatorBuilder:
+                                (_, __) => const SizedBox(width: 16),
+                            itemBuilder: (context, _) {
+                              return Shimmer.fromColors(
+                                baseColor: Colors.grey.shade700,
+                                highlightColor: Colors.grey.shade400,
+                                child: Column(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 45,
+                                      backgroundColor: Colors.white12,
+                                    ),
+                                    const SizedBox(height: 6),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        }
+
+                        if (artistVM.error != null) {
+                          return const Text(
+                            'Failed to load artist list',
+                            style: TextStyle(color: Colors.red),
+                          );
+                        }
+
+                        if (artistVM.artistList.isEmpty) {
+                          return const Text(
+                            'No artist found',
+                            style: TextStyle(color: Colors.white),
+                          );
+                        }
+
+                        return ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: artistVM.artistList.length,
+                          separatorBuilder:
+                              (_, __) => const SizedBox(width: 16),
+                          itemBuilder: (context, index) {
+                            final artist = artistVM.artistList[index];
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (_) =>
+                                            ArtistScreen(artistId: artist.id),
+                                  ),
+                                );
+                              },
+                              child: Column(
+                                children: [
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.deepPurpleAccent
+                                              .withOpacity(0.4),
+                                          blurRadius: 16,
+                                          offset: const Offset(0, 5),
+                                        ),
+                                      ],
+                                    ),
+                                    child: CircleAvatar(
+                                      radius: 45,
+                                      backgroundImage: NetworkImage(
+                                        artist.imageUrl,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  SizedBox(
+                                    width: 80,
+                                    child: Text(
+                                      artist.name,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
 
                   Text(
                     kRecommended,

@@ -1,4 +1,4 @@
-const double kDefaultPadding = 20;
+const double kDefaultPadding = 14;
 
 const String kGreeting = 'Hello, Geby 👋';
 const String kGenres = 'Genres';

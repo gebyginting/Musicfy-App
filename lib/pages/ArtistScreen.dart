@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:my_spotify/utils/GradientScaffold%20.dart';
 import 'package:my_spotify/viewmodels/ArtistViewModel.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ArtistScreen extends StatefulWidget {
   final String artistId;
@@ -30,11 +31,94 @@ class _ArtistScreenState extends State<ArtistScreen> {
     return Consumer<ArtistViewModel>(
       builder: (context, artistVM, child) {
         if (artistVM.isLoading) {
-          return const Scaffold(
+          return Scaffold(
             backgroundColor: Colors.black,
-            body: Center(child: CircularProgressIndicator(color: Colors.green)),
+            body: Shimmer.fromColors(
+              baseColor: Colors.grey.shade800,
+              highlightColor: Colors.grey.shade600,
+              child: CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    expandedHeight: 240,
+                    pinned: true,
+                    backgroundColor: Colors.black,
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Container(color: Colors.grey),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(height: 24, width: 180, color: Colors.grey),
+                          const SizedBox(height: 8),
+                          Container(height: 16, width: 120, color: Colors.grey),
+                          const SizedBox(height: 32),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: List.generate(3, (_) {
+                              return Container(
+                                height: 130,
+                                width: 110,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey,
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              );
+                            }),
+                          ),
+                          const SizedBox(height: 32),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 50,
+                              height: 50,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    height: 14,
+                                    width: double.infinity,
+                                    color: Colors.grey,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Container(
+                                    height: 12,
+                                    width: 100,
+                                    color: Colors.grey,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      childCount: 5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           );
         }
+
         if (artistVM.error != null) {
           return Scaffold(
             backgroundColor: Colors.black,

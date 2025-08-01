@@ -11,6 +11,7 @@ class ArtistViewModel extends ChangeNotifier {
   bool isLoading = false;
   String? error;
   ArtistModel? artist;
+  List<ArtistModel> artistList = [];
   List<AlbumModel> albums = [];
   List<TrackModel> topTracks = [];
   String? totalAlbum;
@@ -28,6 +29,23 @@ class ArtistViewModel extends ChangeNotifier {
       albums = await repository.fetchArtistAlbum(artistId);
       totalAlbum = albums.length.toString();
       topTracks = await repository.fetchArtistTopTracks(artistId);
+    } catch (e) {
+      error = e.toString();
+      debugPrint("Error loading artist: $error");
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadArtistListInformation(List<String> ids) async {
+    isLoading = true;
+    error = null;
+    artistList = [];
+    notifyListeners();
+
+    try {
+      artistList = await repository.fetchArtistListInformation(ids);
     } catch (e) {
       error = e.toString();
       debugPrint("Error loading artist: $error");

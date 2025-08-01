@@ -25,7 +25,7 @@ class SearchBarDelegate extends SliverPersistentHeaderDelegate {
   ) {
     return Container(
       color: const Color(0xFF121350),
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(

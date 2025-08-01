@@ -55,6 +55,27 @@ class Apiservice {
     }
   }
 
+  // FETCH ARTIST LIST INFORMATION
+  Future<List<ArtistModel>> getArtistListInformation(List<String> ids) async {
+    final token = await Spotifyauthservice().getValidToken();
+
+    try {
+      final response = await _dio.get(
+        'https://api.spotify.com/v1/artists',
+        queryParameters: {'ids': ids.join(','), 'market': 'ES'},
+
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final data = response.data;
+      final items = data['artists'] as List;
+
+      return items.map((item) => ArtistModel.fromJson(item)).toList();
+    } catch (e) {
+      throw Exception('Failed to load artists information: $e');
+    }
+  }
+
   // FETCH ARTIST ALBUM INFORMATION
   Future<List<AlbumModel>> fetchArtistAlbum(String artistId) async {
     final token = await Spotifyauthservice().getValidToken();

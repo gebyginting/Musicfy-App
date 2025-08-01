@@ -10,6 +10,10 @@ class ArtistRepository {
     return _api.getArtistInformation(artistId: artistId);
   }
 
+  Future<List<ArtistModel>> fetchArtistListInformation(List<String> ids) {
+    return _api.getArtistListInformation(ids);
+  }
+
   Future<List<AlbumModel>> fetchArtistAlbum(String artistId) {
     return _api.fetchArtistAlbum(artistId);
   }
