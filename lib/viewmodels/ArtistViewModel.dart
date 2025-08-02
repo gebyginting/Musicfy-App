@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_spotify/models/AlbumModel.dart';
 import 'package:my_spotify/models/ArtistModel.dart';
-import 'package:my_spotify/models/PlaylistModel.dart';
 import 'package:my_spotify/models/track_model.dart';
 import 'package:my_spotify/repositories/ArtistRepository.dart';
 

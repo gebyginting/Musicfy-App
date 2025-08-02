@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:my_spotify/pages/AlbumTracksScreen.dart';
+import 'package:my_spotify/pages/ArtistAlbumScreen.dart';
 import 'package:my_spotify/utils/GradientScaffold%20.dart';
 import 'package:my_spotify/viewmodels/ArtistViewModel.dart';
 import 'package:provider/provider.dart';
@@ -31,86 +33,158 @@ class _ArtistScreenState extends State<ArtistScreen> {
     return Consumer<ArtistViewModel>(
       builder: (context, artistVM, child) {
         if (artistVM.isLoading) {
-          return Scaffold(
-            backgroundColor: Colors.black,
-            body: Shimmer.fromColors(
+          return GradientScaffold(
+            child: Shimmer.fromColors(
               baseColor: Colors.grey.shade800,
               highlightColor: Colors.grey.shade600,
               child: CustomScrollView(
                 slivers: [
                   SliverAppBar(
-                    expandedHeight: 240,
+                    expandedHeight: 300,
                     pinned: true,
                     backgroundColor: Colors.black,
                     flexibleSpace: FlexibleSpaceBar(
-                      background: Container(color: Colors.grey),
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      background: Stack(
+                        fit: StackFit.expand,
                         children: [
-                          Container(height: 24, width: 180, color: Colors.grey),
-                          const SizedBox(height: 8),
-                          Container(height: 16, width: 120, color: Colors.grey),
-                          const SizedBox(height: 32),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: List.generate(3, (_) {
-                              return Container(
-                                height: 130,
-                                width: 110,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              );
-                            }),
+                          Container(
+                            color: Colors.grey,
+                          ), // Placeholder background
+                          Container(
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [Colors.transparent, Colors.black],
+                              ),
+                            ),
                           ),
-                          const SizedBox(height: 32),
+                          Positioned(
+                            left: 20,
+                            right: 20,
+                            bottom: 24,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  height: 28,
+                                  width: 200,
+                                  color: Colors.grey.shade700,
+                                ),
+                                const SizedBox(height: 8),
+                                Container(
+                                  height: 14,
+                                  width: 100,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
                   ),
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) => Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
+                  SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 32),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Container(
+                            height: 20,
+                            width: 160,
+                            color: Colors.grey.shade700,
+                          ),
                         ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 50,
-                              height: 50,
-                              color: Colors.grey,
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          height: 200,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            itemCount: 3,
+                            separatorBuilder:
+                                (_, __) => const SizedBox(width: 16),
+                            itemBuilder:
+                                (context, index) => Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      width: 130,
+                                      height: 130,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Container(
+                                      height: 14,
+                                      width: 130,
+                                      color: Colors.grey.shade700,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Container(
+                                      height: 12,
+                                      width: 80,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ],
+                                ),
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Container(
+                            height: 20,
+                            width: 160,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ListView.separated(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: 5,
+                          separatorBuilder:
+                              (_, __) => const SizedBox(height: 16),
+                          itemBuilder:
+                              (context, index) => Row(
                                 children: [
                                   Container(
-                                    height: 14,
-                                    width: double.infinity,
-                                    color: Colors.grey,
+                                    height: 50,
+                                    width: 50,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
                                   ),
-                                  const SizedBox(height: 6),
-                                  Container(
-                                    height: 12,
-                                    width: 100,
-                                    color: Colors.grey,
+                                  const SizedBox(width: 12),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        height: 14,
+                                        width: 200,
+                                        color: Colors.grey.shade700,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Container(
+                                        height: 12,
+                                        width: 100,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
                         ),
-                      ),
-                      childCount: 5,
+                        const SizedBox(height: 32),
+                      ],
                     ),
                   ),
                 ],
@@ -257,7 +331,18 @@ class _ArtistScreenState extends State<ArtistScreen> {
                         ),
                         const Spacer(),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (_) => AllAlbumsScreen(
+                                      albums: albums,
+                                      artistName: artist.name,
+                                    ),
+                              ),
+                            );
+                          },
                           child: Text(
                             'View All',
                             style: GoogleFonts.poppins(
@@ -278,12 +363,19 @@ class _ArtistScreenState extends State<ArtistScreen> {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: albums.length,
+                      itemCount: 4,
                       separatorBuilder: (_, __) => const SizedBox(width: 16),
                       itemBuilder: (context, index) {
                         final album = albums[index];
                         return GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => AlbumTracksScreen(album: album),
+                              ),
+                            );
+                          },
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

@@ -14,7 +14,6 @@ class MusicPlayerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final songVm = context.watch<SongViewModel>();
-    final favorites = songVm.favorites;
 
     return GradientScaffold(
       appBar: AppBar(

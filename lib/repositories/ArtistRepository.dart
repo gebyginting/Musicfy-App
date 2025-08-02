@@ -1,3 +1,4 @@
+import 'package:my_spotify/models/AlbumDetailModel.dart';
 import 'package:my_spotify/models/AlbumModel.dart';
 import 'package:my_spotify/models/ArtistModel.dart';
 import 'package:my_spotify/models/track_model.dart';

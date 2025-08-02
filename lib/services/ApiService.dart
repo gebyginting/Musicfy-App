@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:my_spotify/models/AlbumDetailModel.dart';
 import 'package:my_spotify/models/AlbumModel.dart';
 import 'package:my_spotify/models/ArtistModel.dart';
 import 'package:my_spotify/models/PlaylistModel.dart';
@@ -77,12 +78,12 @@ class Apiservice {
   }
 
   // FETCH ARTIST ALBUM INFORMATION
-  Future<List<AlbumModel>> fetchArtistAlbum(String artistId) async {
+  Future<List<AlbumModel>> fetchArtistAlbum(String albumId) async {
     final token = await Spotifyauthservice().getValidToken();
 
     try {
       final response = await _dio.get(
-        'https://api.spotify.com/v1/artists/$artistId/albums',
+        'https://api.spotify.com/v1/artists/$albumId/albums',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
         queryParameters: {'include_groups': 'single,appears_on', 'limit': 10},
       );
@@ -93,6 +94,23 @@ class Apiservice {
       return items.map((item) => AlbumModel.fromJson(item)).toList();
     } catch (e) {
       throw Exception('Failed to load artist albums: $e');
+    }
+  }
+
+  // FETCH ALBUM TRACKS
+  Future<AlbumTracksModel> fetchAlbumTracks(String albumId) async {
+    final token = await Spotifyauthservice().getValidToken();
+
+    try {
+      final response = await _dio.get(
+        'https://api.spotify.com/v1/albums/$albumId/tracks',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+        queryParameters: {'include_groups': 'single,appears_on', 'limit': 10},
+      );
+
+      return AlbumTracksModel.fromJson(response.data);
+    } catch (e) {
+      throw Exception('Failed to load album tracks: $e');
     }
   }
 
