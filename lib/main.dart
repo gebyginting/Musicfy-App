@@ -17,9 +17,9 @@ void main() async {
   try {
     await dotenv.load(fileName: ".env");
 
-    debugPrint("✅ .env loaded successfully");
+    debugPrint(".env loaded successfully");
   } catch (e) {
-    debugPrint("⚠️ Failed to load .env: $e");
+    debugPrint("Failed to load .env: $e");
   }
 
   // 2️⃣ Init Hive
@@ -28,23 +28,25 @@ void main() async {
     Hive.registerAdapter(TrackModelAdapter());
     Hive.registerAdapter(ArtistAdapter());
     await Hive.openBox<TrackModel>('favorites');
-    debugPrint("✅ Hive initialized successfully");
+    debugPrint("Hive initialized successfully");
   } catch (e) {
-    debugPrint("❌ Hive initialization failed: $e");
+    debugPrint("Hive initialization failed: $e");
   }
 
   // 3️⃣ Setup Dependency Injection
   try {
     setupLocator();
-    debugPrint("✅ Service locator setup completed");
+    debugPrint("Service locator setup completed");
   } catch (e) {
-    debugPrint("❌ Service locator setup failed: $e");
+    debugPrint("Service locator setup failed: $e");
   }
 
   // 4️⃣ Styling System UI
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.black,
+      systemNavigationBarIconBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.light,
     ),
   );

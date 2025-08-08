@@ -106,7 +106,6 @@ class ApiService {
       final options = await _getAuthOptions();
       final response = await _dio.get(
         'https://api.spotify.com/v1/artists/$artistId/albums',
-        queryParameters: {'include_groups': 'single,appears_on'},
         options: options,
       );
 
@@ -123,7 +122,6 @@ class ApiService {
       final options = await _getAuthOptions();
       final response = await _dio.get(
         'https://api.spotify.com/v1/albums/$albumId/tracks',
-        queryParameters: {'include_groups': 'single,appears_on', 'limit': 10},
         options: options,
       );
 

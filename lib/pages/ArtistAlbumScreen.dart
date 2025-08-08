@@ -134,7 +134,7 @@ class AlbumCard extends StatelessWidget {
                   album.name,
                   style: GoogleFonts.poppins(
                     color: Colors.white,
-                    fontSize: 15,
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                     shadows: [
                       const Shadow(
