@@ -42,6 +42,10 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   path_provider: ^2.0.14
+  marquee: ^2.3.0
+  get_it: ^8.2.0
+  cached_network_image: ^3.4.1
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   hive_generator: ^2.0.1
@@ -71,6 +75,7 @@ flutter:
   assets:
     - assets/album.jpg
     - assets/avatar.jpg
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

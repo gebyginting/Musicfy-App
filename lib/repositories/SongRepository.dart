@@ -2,17 +2,16 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:my_spotify/models/track_model.dart';
 import 'package:my_spotify/services/ApiService.dart';
 
-class Songrepository {
-  final Apiservice _api = Apiservice();
+class SongRepository {
+  final ApiService _api;
 
-  Future<List<TrackModel>> fetchTracks(List<String> ids) async {
-    final response = await _api.getTracks(ids);
+  SongRepository(this._api);
 
-    final List<dynamic> data = response.data['tracks'];
-    return data.map((json) => TrackModel.fromJson(json)).toList();
+  Future<List<TrackModel>> fetchTracks(List<String> ids) {
+    return _api.getTracks(ids); // Sudah return TrackModel list
   }
 
-  // Favorites
+  // Favorites section (optional: pisahkan ke FavoritesRepository)
   List<TrackModel> getAllFavorites() {
     final box = Hive.box<TrackModel>('favorites');
     return box.values.toList();

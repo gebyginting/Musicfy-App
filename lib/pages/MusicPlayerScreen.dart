@@ -1,134 +1,146 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:my_spotify/models/track_model.dart';
 import 'package:my_spotify/pages/ArtistScreen.dart';
 import 'package:my_spotify/utils/GradientScaffold%20.dart';
+import 'package:my_spotify/utils/Helper.dart';
+import 'package:my_spotify/utils/constants.dart';
 import 'package:my_spotify/viewmodels/SongViewModel.dart';
 import 'package:provider/provider.dart';
 
 class MusicPlayerScreen extends StatelessWidget {
   final TrackModel song;
+  final String? imageUri;
 
-  const MusicPlayerScreen({super.key, required this.song});
+  const MusicPlayerScreen({super.key, required this.song, this.imageUri});
 
   @override
   Widget build(BuildContext context) {
     final songVm = context.watch<SongViewModel>();
+    final isFav = songVm.isFavorite(song.id);
 
     return GradientScaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Colors.white,
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           "Now Playing",
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.more_vert, color: Colors.white),
+            onPressed: () => showTrackOptions(context: context, track: song),
+          ),
+        ],
       ),
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
         child: Column(
           children: [
-            const SizedBox(height: 16),
-            AspectRatio(
-              aspectRatio: 1,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(28),
-                child:
-                    song.albumImage != null && song.albumImage.isNotEmpty
-                        ? Image.network(
-                          song.albumImage,
-                          fit: BoxFit.cover,
-                          errorBuilder:
-                              (context, error, stackTrace) =>
-                                  const Icon(Icons.broken_image),
-                        )
-                        : const Icon(Icons.broken_image, size: 100),
-              ),
+            const SizedBox(height: 8),
+            _AlbumArt(primaryImage: song.albumImage, fallbackImage: imageUri),
+            const SizedBox(height: 12),
+            ConditionalMarqueeText(
+              text: song.name,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 24),
-
-            // Song Info
-            Text(
-              song.name,
-              style: GoogleFonts.poppins(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+            const SizedBox(height: 6),
             GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) =>
-                            ArtistScreen(artistId: song.artists.first.id),
-                  ),
-                );
+                final artist = song.artists.firstOrNull;
+                if (artist != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ArtistScreen(artistId: artist.id),
+                    ),
+                  );
+                }
               },
               child: Text(
-                song.artists.first.name,
-                style: GoogleFonts.poppins(fontSize: 16, color: Colors.white70),
+                song.artists.firstOrNull?.name ?? "Unknown Artist",
+                style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
             ),
-            const SizedBox(height: 12),
-
-            // Optional Icons
+            const SizedBox(height: 14),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
                   onPressed: () => songVm.toggleFavorite(song),
                   icon: Icon(
-                    songVm.isFavorite(song.id)
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                    color:
-                        songVm.isFavorite(song.id)
-                            ? Colors.red
-                            : Colors.white70,
+                    isFav ? Icons.favorite : Icons.favorite_border,
+                    color: isFav ? Colors.red : Colors.white70,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 14),
                 IconButton(
                   onPressed: () {},
                   icon: const Icon(Icons.playlist_add, color: Colors.white70),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-
-            // Slider
+            const SizedBox(height: 14),
             const MusicSlider(),
-
-            // Time Label
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text("1:23", style: TextStyle(color: Colors.white70)),
-                Text("3:45", style: TextStyle(color: Colors.white70)),
-              ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Text("1:23", style: TextStyle(color: Colors.white70)),
+                  Text("3:45", style: TextStyle(color: Colors.white70)),
+                ],
+              ),
             ),
-
-            const SizedBox(height: 24),
-            // Player Controls
+            const SizedBox(height: 12),
             const PlayerControls(),
             const SizedBox(height: 32),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _AlbumArt extends StatelessWidget {
+  final String? primaryImage;
+  final String? fallbackImage;
+
+  const _AlbumArt({this.primaryImage, this.fallbackImage});
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final imageSize = screenHeight * 0.4;
+
+    // Pilih gambar: kalau primary kosong/null → pakai fallback
+    final imageToShow =
+        (primaryImage != null && primaryImage!.isNotEmpty)
+            ? primaryImage!
+            : (fallbackImage ?? '');
+    return SizedBox(
+      height: imageSize,
+      width: imageSize,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child:
+            imageToShow.isNotEmpty
+                ? Image.network(
+                  imageToShow,
+                  fit: BoxFit.cover,
+                  errorBuilder:
+                      (_, __, ___) => const Icon(Icons.broken_image, size: 100),
+                )
+                : const Icon(Icons.broken_image, size: 100),
       ),
     );
   }

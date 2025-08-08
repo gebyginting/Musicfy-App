@@ -14,23 +14,11 @@ class PlaylistCard extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder:
-                (_) => PlayListScreen(
-                  playlistTitle: playlist.name,
-                  tracks:
-                      playlist.tracks.items.map((item) => item.track).toList(),
-                  artistImage:
-                      playlist.images.isNotEmpty
-                          ? playlist.images.first.url
-                          : '',
-                  playlistOwner: playlist.owner.displayName,
-                ),
-          ),
+          MaterialPageRoute(builder: (_) => PlayListScreen(playlist: playlist)),
         );
       },
       child: Container(
-        width: 140,
+        width: 130,
         decoration: BoxDecoration(
           color: Colors.white12,
           borderRadius: BorderRadius.circular(16),
@@ -45,10 +33,9 @@ class PlaylistCard extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             child: Text(
               playlist.name,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleSmall,
             ),
           ),
         ),

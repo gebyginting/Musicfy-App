@@ -13,18 +13,22 @@ class TrackModel {
   final List<Artist> artists;
 
   @HiveField(3)
-  final String albumImage;
+  final String albumId;
 
   @HiveField(4)
-  final String albumName;
+  final String albumImage;
 
   @HiveField(5)
+  final String albumName;
+
+  @HiveField(6)
   final int durationMs;
 
   TrackModel({
     required this.id,
     required this.name,
     required this.artists,
+    required this.albumId,
     required this.albumImage,
     required this.albumName,
     required this.durationMs,
@@ -36,7 +40,6 @@ class TrackModel {
         (json['artists'] as List? ?? [])
             .map((a) => Artist.fromJson(a))
             .toList();
-
     final albumImages = (json['album']?['images'] as List?) ?? [];
     final albumImageUrl =
         albumImages.isNotEmpty ? albumImages[0]['url'] ?? '' : '';
@@ -45,6 +48,7 @@ class TrackModel {
       id: json['id'] ?? '',
       name: json['name'] ?? 'Unknown',
       artists: artistList,
+      albumId: json['album']?['id'] ?? 'Unknown ID',
       albumImage: albumImageUrl,
       albumName: json['album']?['name'] ?? 'Unknown Album',
       durationMs: json['duration_ms'] ?? 0,

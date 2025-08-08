@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:my_spotify/models/track_model.dart';
 import 'package:my_spotify/pages/HomeScreen.dart';
-import 'package:my_spotify/repositories/AlbumRepository.dart';
-import 'package:my_spotify/repositories/ArtistRepository.dart';
-import 'package:my_spotify/repositories/PlaylistRepository.dart';
-import 'package:my_spotify/repositories/SongRepository.dart';
+import 'package:my_spotify/repositories/setup_locator.dart';
 import 'package:my_spotify/viewmodels/AlbumViewModel.dart';
 import 'package:my_spotify/viewmodels/ArtistViewModel.dart';
 import 'package:my_spotify/viewmodels/PlaylistViewModel.dart';
@@ -14,40 +13,50 @@ import 'package:my_spotify/viewmodels/SongViewModel.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  // 1️⃣ Load .env
+  try {
+    await dotenv.load(fileName: ".env");
 
-  // inisialisasi Hive
-  await Hive.initFlutter();
+    debugPrint("✅ .env loaded successfully");
+  } catch (e) {
+    debugPrint("⚠️ Failed to load .env: $e");
+  }
 
-  // register adapter
-  Hive.registerAdapter(TrackModelAdapter());
+  // 2️⃣ Init Hive
+  try {
+    await Hive.initFlutter();
+    Hive.registerAdapter(TrackModelAdapter());
+    Hive.registerAdapter(ArtistAdapter());
+    await Hive.openBox<TrackModel>('favorites');
+    debugPrint("✅ Hive initialized successfully");
+  } catch (e) {
+    debugPrint("❌ Hive initialization failed: $e");
+  }
 
-  // buka box
-  await Hive.openBox<TrackModel>('favorites');
+  // 3️⃣ Setup Dependency Injection
+  try {
+    setupLocator();
+    debugPrint("✅ Service locator setup completed");
+  } catch (e) {
+    debugPrint("❌ Service locator setup failed: $e");
+  }
+
+  // 4️⃣ Styling System UI
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+    ),
+  );
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   runApp(
     MultiProvider(
       providers: [
-        Provider(create: (_) => Songrepository()),
-        Provider(create: (_) => Playlistrepository()),
-        Provider(create: (_) => ArtistRepository()),
-        Provider(create: (_) => AlbumRepository()),
-
-        ChangeNotifierProvider(
-          create: (context) => SongViewModel(context.read<Songrepository>()),
-        ),
-        ChangeNotifierProvider(
-          create:
-              (context) =>
-                  Playlistviewmodel(context.read<Playlistrepository>()),
-        ),
-        ChangeNotifierProvider(
-          create:
-              (context) => ArtistViewModel(context.read<ArtistRepository>()),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => AlbumViewModel(context.read<AlbumRepository>()),
-        ),
+        ChangeNotifierProvider(create: (_) => locator<SongViewModel>()),
+        ChangeNotifierProvider(create: (_) => locator<PlaylistViewModel>()),
+        ChangeNotifierProvider(create: (_) => locator<ArtistViewModel>()),
+        ChangeNotifierProvider(create: (_) => locator<AlbumViewModel>()),
       ],
       child: MyApp(),
     ),
@@ -64,6 +73,31 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        textTheme: GoogleFonts.poppinsTextTheme(
+          TextTheme(
+            titleLarge: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+            titleMedium: TextStyle(
+              fontSize: 15.0,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+            titleSmall: TextStyle(
+              fontSize: 12.0,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+            bodyMedium: TextStyle(
+              fontSize: 14.0,
+              fontWeight: FontWeight.w400,
+              color: Colors.white,
+            ),
+            bodySmall: TextStyle(fontSize: 12.0, color: Colors.white),
+          ),
+        ),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: HomeScreen(),

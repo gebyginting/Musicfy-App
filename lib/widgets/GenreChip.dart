@@ -15,7 +15,7 @@ class GenreChip extends StatelessWidget {
         color: Colors.white10,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Text(name, style: GoogleFonts.poppins(color: Colors.white)),
+      child: Text(name, style: Theme.of(context).textTheme.bodySmall),
     );
   }
 }

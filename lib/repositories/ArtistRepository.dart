@@ -5,7 +5,8 @@ import 'package:my_spotify/models/track_model.dart';
 import 'package:my_spotify/services/ApiService.dart';
 
 class ArtistRepository {
-  final Apiservice _api = Apiservice();
+  final ApiService _api;
+  ArtistRepository(this._api);
 
   Future<ArtistModel> fetchArtistInformation(String artistId) {
     return _api.getArtistInformation(artistId: artistId);
@@ -16,7 +17,7 @@ class ArtistRepository {
   }
 
   Future<List<AlbumModel>> fetchArtistAlbum(String artistId) {
-    return _api.fetchArtistAlbum(artistId);
+    return _api.fetchArtistAlbums(artistId);
   }
 
   Future<List<TrackModel>> fetchArtistTopTracks(String artistId) {

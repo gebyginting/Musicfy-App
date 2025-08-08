@@ -1,33 +1,41 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:my_spotify/models/PlaylistModel.dart';
 import 'package:my_spotify/repositories/PlaylistRepository.dart';
 
-class Playlistviewmodel extends ChangeNotifier {
-  final Playlistrepository repository;
+class PlaylistViewModel extends ChangeNotifier {
+  final PlaylistRepository _repository;
 
-  List<PlaylistModel> playlists = [];
-  bool isLoading = false;
-  String? error;
+  PlaylistViewModel(this._repository);
 
-  Playlistviewmodel(this.repository);
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
 
-  Future<void> loadMultiplePlaylists(List<String> playlistIds) async {
-    isLoading = true;
-    error = null;
-    playlists = [];
-    notifyListeners();
+  String? _error;
+  String? get error => _error;
 
+  List<PlaylistModel> _playlists = [];
+  List<PlaylistModel> get playlists => _playlists;
+
+  Future<void> loadPlaylists(List<String> playlistIds) async {
+    _setLoading(true);
     try {
-      final futures = playlistIds.map(
-        (id) => repository.fetchPlaylistTracks(id),
+      _playlists = await Future.wait(
+        playlistIds.map(_repository.fetchPlaylistTracks),
       );
-      playlists = await Future.wait(futures);
     } catch (e) {
-      error = e.toString();
-      debugPrint("Error loading playlist: $error");
+      _setError('Failed to load playlists: $e');
     } finally {
-      isLoading = false;
-      notifyListeners();
+      _setLoading(false);
     }
+  }
+
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  void _setError(String? value) {
+    _error = value;
+    notifyListeners();
   }
 }

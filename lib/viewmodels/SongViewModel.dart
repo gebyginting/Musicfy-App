@@ -1,39 +1,34 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:my_spotify/models/track_model.dart';
 import 'package:my_spotify/repositories/SongRepository.dart';
 
 class SongViewModel extends ChangeNotifier {
-  final Songrepository _repository;
+  final SongRepository _repository;
 
-  SongViewModel(this._repository); // Inject repository lewat constructor
-
-  List<TrackModel> _songs = [];
-  List<TrackModel> get songs => _songs;
+  SongViewModel(this._repository);
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
+  String? _error;
+  String? get error => _error;
+
+  List<TrackModel> _songs = [];
+  List<TrackModel> get songs => _songs;
+
+  List<TrackModel> get favorites => _repository.getAllFavorites();
 
   Future<void> loadSongsByIds(List<String> ids) async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-
+    _setLoading(true);
     try {
       _songs = await _repository.fetchTracks(ids);
+      _error = null;
     } catch (e) {
-      _errorMessage = 'Failed to load songs: $e';
-      debugPrint(_errorMessage);
+      _setError('Failed to load songs: $e');
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      _setLoading(false);
     }
   }
-
-  // Favorites
-  List<TrackModel> get favorites => _repository.getAllFavorites();
 
   void toggleFavorite(TrackModel track) {
     if (_repository.isFavorite(track.id)) {
@@ -45,4 +40,14 @@ class SongViewModel extends ChangeNotifier {
   }
 
   bool isFavorite(String id) => _repository.isFavorite(id);
+
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  void _setError(String? value) {
+    _error = value;
+    notifyListeners();
+  }
 }

@@ -1,3 +1,5 @@
+import 'package:my_spotify/models/track_model.dart';
+
 class AlbumModel {
   final String id;
   final String name;
@@ -7,7 +9,7 @@ class AlbumModel {
   final int totalTracks;
   final String imageUrl;
   final String artistName;
-  final String spotifyUrl;
+  final List<TrackModel> tracks;
 
   AlbumModel({
     required this.id,
@@ -17,7 +19,7 @@ class AlbumModel {
     required this.totalTracks,
     required this.imageUrl,
     required this.artistName,
-    required this.spotifyUrl,
+    required this.tracks,
     this.albumGroup,
   });
 
@@ -29,6 +31,9 @@ class AlbumModel {
     final firstArtistUrl =
         artists.isNotEmpty ? artists.first['name'] ?? '' : '';
 
+    // Ambil daftar track dari tracks.items
+    final trackItems = (json['tracks']?['items'] as List?) ?? [];
+    final parsedTracks = trackItems.map((t) => TrackModel.fromJson(t)).toList();
     return AlbumModel(
       id: json['id'],
       name: json['name'],
@@ -38,8 +43,7 @@ class AlbumModel {
       totalTracks: json['total_tracks'],
       imageUrl: firstImageUrl,
       artistName: firstArtistUrl,
-
-      spotifyUrl: json['external_urls']['spotify'],
+      tracks: parsedTracks,
     );
   }
 }

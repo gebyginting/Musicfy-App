@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Spotifyauthservice {
-  static const _clientId = "b6b7b0a74dd7408b94e02c8d700d8764";
-  static const _clientSecret = "46576e47c4cd477cad4d699275929c45";
+  final String _clientId = dotenv.env['SPOTIFY_CLIENT_ID'] ?? '';
+  final String _clientSecret = dotenv.env['SPOTIFY_CLIENT_SECRET'] ?? '';
 
   Future<String> getToken() async {
     final credentials = base64.encode(utf8.encode('$_clientId:$_clientSecret'));

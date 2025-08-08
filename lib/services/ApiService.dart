@@ -6,32 +6,45 @@ import 'package:my_spotify/models/PlaylistModel.dart';
 import 'package:my_spotify/models/track_model.dart';
 import 'package:my_spotify/services/SpotifyAuthService.dart';
 
-class Apiservice {
-  final Dio _dio = Dio();
+class ApiService {
+  final Dio _dio;
+  ApiService() : _dio = Dio();
 
-  // FETCH TRACKS
-  Future<Response> getTracks(List<String> ids) async {
+  // Helper method to get headers with valid token
+  Future<Options> _getAuthOptions() async {
     final token = await Spotifyauthservice().getValidToken();
-
-    return _dio.get(
-      'https://api.spotify.com/v1/tracks',
-      queryParameters: {'ids': ids.join(','), 'market': 'ES'},
-      options: Options(headers: {'Authorization': 'Bearer $token'}),
-    );
+    return Options(headers: {'Authorization': 'Bearer $token'});
   }
 
-  // FETCH PLAYLIST
-  Future<PlaylistModel> getPlaylistTracks({required String playlistId}) async {
-    final token = await Spotifyauthservice().getValidToken();
-
+  // Fetch single or multiple tracks by IDs
+  Future<List<TrackModel>> getTracks(List<String> ids) async {
     try {
+      final options = await _getAuthOptions();
+      final response = await _dio.get(
+        'https://api.spotify.com/v1/tracks',
+        queryParameters: {'ids': ids.join(','), 'market': 'ES'},
+        options: options,
+      );
+
+      final data = response.data['tracks'] as List;
+
+      return data.map((e) => TrackModel.fromJson(e)).toList();
+    } catch (e) {
+      throw Exception('Failed to load tracks: $e');
+    }
+  }
+
+  // Fetch a playlist and its tracks
+  Future<PlaylistModel> getPlaylistTracks({required String playlistId}) async {
+    try {
+      final options = await _getAuthOptions();
       final response = await _dio.get(
         'https://api.spotify.com/v1/playlists/$playlistId',
         queryParameters: {
           'fields':
-              'name,owner(display_name),images,tracks.items(added_by.id,track(name,href,album(name,href,images),artists))',
+              'name,owner(display_name),images,tracks.items(added_by.id,track(name,href,album,artists))',
         },
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
+        options: options,
       );
 
       return PlaylistModel.fromJson(response.data);
@@ -40,72 +53,78 @@ class Apiservice {
     }
   }
 
-  // FETCH ARTIST INFORMATION
-  Future<ArtistModel> getArtistInformation({required String artistId}) async {
-    final token = await Spotifyauthservice().getValidToken();
-
+  // Fetch album detail by album ID
+  Future<AlbumModel> getAlbumInformation({required String albumId}) async {
+    final options = await _getAuthOptions();
     try {
       final response = await _dio.get(
+        'https://api.spotify.com/v1/albums/$albumId',
+        options: options,
+      );
+
+      return AlbumModel.fromJson(response.data);
+    } catch (e) {
+      throw Exception('Failed to load album information: $e');
+    }
+  }
+
+  // Fetch single artist information
+  Future<ArtistModel> getArtistInformation({required String artistId}) async {
+    try {
+      final options = await _getAuthOptions();
+      final response = await _dio.get(
         'https://api.spotify.com/v1/artists/$artistId',
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
+        options: options,
       );
 
       return ArtistModel.fromJson(response.data);
     } catch (e) {
-      throw Exception('Failed to load artists information: $e');
+      throw Exception('Failed to load artist information: $e');
     }
   }
 
-  // FETCH ARTIST LIST INFORMATION
+  // Fetch multiple artists info by list of IDs
   Future<List<ArtistModel>> getArtistListInformation(List<String> ids) async {
-    final token = await Spotifyauthservice().getValidToken();
-
     try {
+      final options = await _getAuthOptions();
       final response = await _dio.get(
         'https://api.spotify.com/v1/artists',
         queryParameters: {'ids': ids.join(','), 'market': 'ES'},
-
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
+        options: options,
       );
 
-      final data = response.data;
-      final items = data['artists'] as List;
-
+      final items = response.data['artists'] as List;
       return items.map((item) => ArtistModel.fromJson(item)).toList();
     } catch (e) {
       throw Exception('Failed to load artists information: $e');
     }
   }
 
-  // FETCH ARTIST ALBUM INFORMATION
-  Future<List<AlbumModel>> fetchArtistAlbum(String albumId) async {
-    final token = await Spotifyauthservice().getValidToken();
-
+  // Fetch albums of an artist
+  Future<List<AlbumModel>> fetchArtistAlbums(String artistId) async {
     try {
+      final options = await _getAuthOptions();
       final response = await _dio.get(
-        'https://api.spotify.com/v1/artists/$albumId/albums',
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
-        queryParameters: {'include_groups': 'single,appears_on', 'limit': 10},
+        'https://api.spotify.com/v1/artists/$artistId/albums',
+        queryParameters: {'include_groups': 'single,appears_on'},
+        options: options,
       );
 
-      final data = response.data;
-      final items = data['items'] as List;
-
+      final items = response.data['items'] as List;
       return items.map((item) => AlbumModel.fromJson(item)).toList();
     } catch (e) {
       throw Exception('Failed to load artist albums: $e');
     }
   }
 
-  // FETCH ALBUM TRACKS
+  // Fetch tracks in an album
   Future<AlbumTracksModel> fetchAlbumTracks(String albumId) async {
-    final token = await Spotifyauthservice().getValidToken();
-
     try {
+      final options = await _getAuthOptions();
       final response = await _dio.get(
         'https://api.spotify.com/v1/albums/$albumId/tracks',
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
         queryParameters: {'include_groups': 'single,appears_on', 'limit': 10},
+        options: options,
       );
 
       return AlbumTracksModel.fromJson(response.data);
@@ -114,20 +133,17 @@ class Apiservice {
     }
   }
 
-  // FETCH ARTIST TOP TRACKS
+  // Fetch artist's top tracks
   Future<List<TrackModel>> fetchArtistTopTracks(String artistId) async {
-    final token = await Spotifyauthservice().getValidToken();
-
     try {
+      final options = await _getAuthOptions();
       final response = await _dio.get(
         'https://api.spotify.com/v1/artists/$artistId/top-tracks',
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
         queryParameters: {'market': 'ES'},
+        options: options,
       );
 
-      final data = response.data;
-      final items = data['tracks'] as List;
-
+      final items = response.data['tracks'] as List;
       return items.map((item) => TrackModel.fromJson(item)).toList();
     } catch (e) {
       throw Exception('Failed to load artist top tracks: $e');

@@ -24,23 +24,30 @@ class SearchBarDelegate extends SliverPersistentHeaderDelegate {
     bool overlapsContent,
   ) {
     return Container(
-      color: const Color(0xFF121350),
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: BoxDecoration(
-          color: Colors.white12,
-          borderRadius: BorderRadius.circular(12),
-        ),
+      color: const Color(0xFF121350), // background header
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Material(
+        elevation: 2,
+        color: Colors.white12,
+        borderRadius: BorderRadius.circular(12),
         child: TextField(
           controller: controller,
-          style: const TextStyle(color: Colors.white),
           onChanged: onChanged,
+          style: Theme.of(context).textTheme.bodyMedium,
+          cursorColor: Colors.white70,
           decoration: InputDecoration(
             hintText: "Search your vibe...",
-            hintStyle: const TextStyle(color: Colors.white70),
+            hintStyle: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: Colors.white54),
             border: InputBorder.none,
-            prefixIcon: const Icon(Icons.search, color: Colors.white70),
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(vertical: 12),
+            prefixIcon: const Icon(
+              Icons.search,
+              color: Colors.white70,
+              size: 24,
+            ),
             suffixIcon:
                 controller.text.isNotEmpty
                     ? IconButton(
